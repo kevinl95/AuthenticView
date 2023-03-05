@@ -4,7 +4,33 @@ from fastapi import FastAPI, File, UploadFile
 from starlette.responses import StreamingResponse
 from io import BytesIO
 
-app = FastAPI()
+description = """
+Detecting manipulated photos with AI for body positivity. 🚀
+
+## Analyze Photos
+
+You can upload a photo to this API and receive a manipulation heatmap (as a JPEG) in response by using this endpint:
+
+* **/analyze**
+
+If there has been no manipulation detected you will get your original image back as a JPEG.
+"""
+
+app = FastAPI(
+    title="AuthenticView API",
+    description=description,
+    version="1.0.0",
+    contact={
+        "name": "Kevin Loeffler",
+        "url": "http://kevinloeffler.com/contact/",
+        "email": "loefflerlabs@gmail.com",
+    },
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    },
+
+)
 
 
 @app.post("/analyze")
@@ -29,6 +55,7 @@ def upload(file: UploadFile = File(...)):
         + weightsPath
         + " --dest_folder "
         + session
+        + " --no_crop"
     )
     p = subprocess.Popen(analyze_cmd, stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
@@ -40,10 +67,15 @@ def upload(file: UploadFile = File(...)):
     finally:
         file.file.close()
     image = None
-    with open(os.path.join(session, "warped.jpg"), "rb") as fh:
-        image = fh.read()
+    heatmap = os.path.join(session, "heatmap.jpg")
+    if os.path.isfile(heatmap):
+        with open(heatmap, "rb") as fh:
+            image = fh.read()
     # Cleanup
     os.remove(filePath)
     shutil.rmtree(session)
-    os.chmod(origDir)
-    return StreamingResponse(image, media_type="image/jpeg")
+    os.chdir(origDir)
+    if image:
+        return StreamingResponse(BytesIO(image), media_type="image/jpeg")
+    else:
+        return StreamingResponse(BytesIO(contents), media_type="image/jpeg")
