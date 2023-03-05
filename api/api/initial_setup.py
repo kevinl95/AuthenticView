@@ -1,5 +1,6 @@
 import time, os, urllib
 from urllib.request import urlopen
+from pathlib import Path
 
 max_attempts = 80
 attempts = 0
