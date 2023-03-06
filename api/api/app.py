@@ -47,7 +47,7 @@ def upload(file: UploadFile = File(...)):
     if not os.path.exists(session):
         os.makedirs(session)
     analyze_cmd = (
-        "poetry run python "
+        "python3 -m poetry run python "
         + scriptPath
         + " --input_path "
         + filePath
