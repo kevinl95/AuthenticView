@@ -21,11 +21,6 @@ app = FastAPI(
     title="AuthenticView API",
     description=description,
     version="1.0.0",
-    contact={
-        "name": "Kevin Loeffler",
-        "url": "http://kevinloeffler.com/contact/",
-        "email": "loefflerlabs@gmail.com",
-    },
     license_info={
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
