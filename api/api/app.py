@@ -1,6 +1,7 @@
 import asyncio, io, os, subprocess, uuid, shutil
 import uvicorn
 from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import RedirectResponse
 from starlette.responses import StreamingResponse
 from io import BytesIO
 
@@ -32,6 +33,9 @@ app = FastAPI(
 
 )
 
+@app.get("/")
+async def docs_redirect():
+    return RedirectResponse(url='/docs')
 
 @app.post("/analyze")
 def upload(file: UploadFile = File(...)):
@@ -47,7 +51,7 @@ def upload(file: UploadFile = File(...)):
     if not os.path.exists(session):
         os.makedirs(session)
     analyze_cmd = (
-        "python3 -m poetry run python "
+        "python3 "
         + scriptPath
         + " --input_path "
         + filePath
