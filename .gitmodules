@@ -1,3 +1,6 @@
 [submodule "api/api/FALdetector"]
 	path = api/api/FALdetector
 	url = https://github.com/PeterWang512/FALdetector
+[submodule "authenticview-extension"]
+	path = authenticview-extension
+	url = https://github.com/kevinl95/authenticview-extension
