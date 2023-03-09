@@ -1,5 +1,6 @@
 import asyncio, io, os, subprocess, uuid, shutil
 import uvicorn
+import requests
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import RedirectResponse, FileResponse
 from starlette.responses import StreamingResponse
@@ -63,12 +64,48 @@ def upload(file: UploadFile = File(...)):
     p = subprocess.Popen(analyze_cmd, stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     p_status = p.wait()
-    try:
-        pass
-    except Exception:
-        return {"message": "There was an error handling the image"}
-    finally:
-        file.file.close()
+    file.file.close()
+    image = None
+    heatmap = os.path.join(session, "heatmap.jpg")
+    if os.path.isfile(heatmap):
+        with open(heatmap, "rb") as fh:
+            image = fh.read()
+    # Cleanup
+    os.remove(filePath)
+    shutil.rmtree(session)
+    os.chdir(origDir)
+    if image:
+        return StreamingResponse(BytesIO(image), media_type="image/jpeg")
+    else:
+        return StreamingResponse(BytesIO(contents), media_type="image/jpeg")
+
+@app.post("/analyze-url")
+def getImage(url: str):
+    origDir = os.getcwd()
+    os.chdir("FALdetector")
+    session = str(uuid.uuid4())
+    filePath = url.split('/')[-1]
+    r = requests.get(url, allow_redirects=True)
+    contents = r.content
+    open(filePath, 'wb').write(contents)
+    scriptPath = "local_detector.py"
+    weightsPath = os.path.join("weights", "local.pth")
+    if not os.path.exists(session):
+        os.makedirs(session)
+    analyze_cmd = (
+        "python3 "
+        + scriptPath
+        + " --input_path "
+        + filePath
+        + " --model_path "
+        + weightsPath
+        + " --dest_folder "
+        + session
+        + " --no_crop"
+    )
+    p = subprocess.Popen(analyze_cmd, stdout=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
+    p_status = p.wait()
     image = None
     heatmap = os.path.join(session, "heatmap.jpg")
     if os.path.isfile(heatmap):
