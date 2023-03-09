@@ -1,7 +1,7 @@
 import asyncio, io, os, subprocess, uuid, shutil
 import uvicorn
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
 from starlette.responses import StreamingResponse
 from io import BytesIO
 
@@ -31,6 +31,10 @@ app = FastAPI(
 @app.get("/", include_in_schema=False)
 async def docs_redirect():
     return RedirectResponse(url='/docs')
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse("favicon.ico")
 
 @app.post("/analyze")
 def upload(file: UploadFile = File(...)):
