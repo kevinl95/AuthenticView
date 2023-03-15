@@ -1,7 +1,8 @@
-import asyncio, io, os, subprocess, uuid, shutil
+import asyncio, io, os, subprocess, uuid, shutil, base64
 import uvicorn
 import requests
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, FileResponse
 from starlette.responses import StreamingResponse
 from io import BytesIO
@@ -27,6 +28,17 @@ app = FastAPI(
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
 
+)
+
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/", include_in_schema=False)
@@ -116,6 +128,6 @@ def getImage(url: str):
     shutil.rmtree(session)
     os.chdir(origDir)
     if image:
-        return StreamingResponse(BytesIO(image), media_type="image/jpeg")
+        return StreamingResponse(base64.b64encode(BytesIO(image).getvalue()), media_type="image/jpeg;base64")
     else:
-        return StreamingResponse(BytesIO(contents), media_type="image/jpeg")
+        return StreamingResponse(base64.b64encode(BytesIO(contents).getvalue()), media_type="image/jpeg;base64")
