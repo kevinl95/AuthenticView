@@ -4,3 +4,6 @@
 [submodule "authenticview-extension"]
 	path = authenticview-extension
 	url = https://github.com/kevinl95/authenticview-extension
+[submodule "authenticview-landing-page"]
+	path = authenticview-landing-page
+	url = https://github.com/kevinl95/authenticview-landing-page.git
