@@ -2,7 +2,7 @@
 
 # AuthenticView
 
-AuthenticView is a free AI-driven browser extension which identifies where images have been manipulated to promote an unrealistic body image.
+AuthenticView is a free AI-driven browser extension which identifies where images have been manipulated to promote an unrealistic body image. Images where the AI tool is more certain manipulation has occured is highlighted in red, whereas areas were it is less sure are highlighted in blue.
 
 Install our browser extension right now [by clicking here!](https://github.com/kevinl95/AuthenticView/releases/tag/v1.0)
 
