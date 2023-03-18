@@ -41,10 +41,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/", include_in_schema=False)
-async def docs_redirect():
-    return RedirectResponse(url='/docs')
-
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
     return FileResponse("favicon.ico")
